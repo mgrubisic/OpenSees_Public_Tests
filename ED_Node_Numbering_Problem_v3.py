@@ -479,8 +479,8 @@ plot_fig(figure_size=[15, 8], font_size=11, use_latex=False)
 plt.plot(outputs["time"], outputs[f"disp_{node2}x"]/mm, 'b-', linewidth=1, label="Node 2 in x-dir")
 plt.xlabel("Time [s]")
 plt.ylabel("Displacement [mm]")
-title = r"Node numbering: $\mathbf{" + nodeNumbering + "}$, Constraints: $\mathbf{" + constraints + "}$"
-plt.title(title)
+figTitle = r"Node numbering: $\mathbf{" + nodeNumbering + "}$, Constraints: $\mathbf{" + constraints + "}$"
+plt.title(figTitle)
 plt.legend()
 plt.show()
 
