@@ -428,8 +428,7 @@ plt.title('Mode Shape 1')
 # ┌───────────────────────────────────────────────────────────────────────────────┐
 # │                             Transient Analysis                                │
 # └───────────────────────────────────────────────────────────────────────────────┘
-# ops.wipeAnalysis()
-num_modes = 2
+# ops.wipeAnalysis()
 
 ops.system("UmfPack") # UmfPack, FullGeneral
 # ops.eigen("-fullGenLapack", num_modes)
