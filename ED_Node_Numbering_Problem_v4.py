@@ -169,7 +169,7 @@ print(
 
 # Node numbering
 # --------------
-nodeNumbering = "simple" # "simple", "problematicV1", "problematicV2", "problematicV3"
+nodeNumbering = "problematicV1" # "simple", "problematicV1", "problematicV2", "problematicV3"
 
 # Constraints type
 # ----------------
