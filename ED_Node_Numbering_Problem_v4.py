@@ -192,7 +192,8 @@ if nodeNumbering == "simple":
     
     With simple node numbering, everything is fine and validated with alternative software
     
-    + Pairs of nodes (node3+node4 & node5+node6) constrained with the equalDOF/rigidLink command one after the other in a sequence.
+    + Pairs of nodes -- node3+node4 after node2+node3 & node5+node6 after node2+node5 -- constrained
+      with the equalDOF/rigidLink command one after the other in a sequence.
     """
     node1 = 1
     node2 = 2
@@ -210,10 +211,12 @@ elif nodeNumbering == "problematicV1":
     This combination of node numbering gives equal frequencies and dynamic
     response as if the model only takes into account the mass in all nodes except the "Node6" !
     
-    + Pairs of nodes (node3+node4 & node5+node6) constrained with the equalDOF/rigidLink command one after the other in a sequence.
-    + A consistent pattern was observed: if the tag of the constrained/secondary node is smaller than
-      that of its corresponding retained/primary node, the mass associated with the constrained/secondary node
-      is excluded from the model.
+    + Pairs of nodes -- node3+node4 after node2+node3 & node5+node6 after node2+node5 -- constrained
+      with the equalDOF/rigidLink command one after the other in a sequence.
+      
+    + A consistent pattern was observed in this example: if the tag of the last constrained/secondary node in a sequence
+      is smaller than that of its corresponding retained/primary node, the mass associated with the constrained/secondary
+      node is excluded from the model.
     """
     node1 = 1
     node2 = 2
@@ -233,10 +236,12 @@ elif nodeNumbering == "problematicV2":
     This combination of node numbering gives equal frequencies and dynamic
     response as if the model only takes into account the mass in all nodes except the "Node4" !
         
-    + Pairs of nodes (node3+node4 & node5+node6) constrained with the equalDOF/rigidLink command one after the other in a sequence.
-    + A consistent pattern was observed: if the tag of the constrained/secondary node is smaller than
-      that of its corresponding retained/primary node, the mass associated with the constrained/secondary node
-      is excluded from the model.
+    + Pairs of nodes -- node3+node4 after node2+node3 & node5+node6 after node2+node5 -- constrained
+      with the equalDOF/rigidLink command one after the other in a sequence.
+      
+    + A consistent pattern was observed in this example: if the tag of the last constrained/secondary node in a sequence
+      is smaller than that of its corresponding retained/primary node, the mass associated with the constrained/secondary
+      node is excluded from the model.
     """
     node1 = 1
     node2 = 2
@@ -256,10 +261,12 @@ elif nodeNumbering == "problematicV3":
     This combination of node numbering gives equal frequencies and dynamic
     response as if the model doesn't take it into account the masses in both "Node4" and "Node6" !
         
-    + Pairs of nodes (node3+node4 & node5+node6) constrained with the equalDOF/rigidLink command one after the other in a sequence.
-    + A consistent pattern was observed: if the tag of the constrained/secondary node is smaller than
-      that of its corresponding retained/primary node, the mass associated with the constrained/secondary node
-      is excluded from the model.
+    + Pairs of nodes -- node3+node4 after node2+node3 & node5+node6 after node2+node5 -- constrained
+      with the equalDOF/rigidLink command one after the other in a sequence.
+      
+    + A consistent pattern was observed in this example: if the tag of the last constrained/secondary node in a sequence
+      is smaller than that of its corresponding retained/primary node, the mass associated with the constrained/secondary
+      node is excluded from the model.
     """
     node1 = 1
     node2 = 2
