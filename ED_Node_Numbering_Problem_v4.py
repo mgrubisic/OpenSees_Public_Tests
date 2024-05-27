@@ -435,6 +435,7 @@ ops.system("UmfPack") # UmfPack, FullGeneral
 dampRatio = 0.02
 ops.modalDampingQ(dampRatio)
 
+# The file with the ElCentro ground motion record is in the same Github repository as this OpenSees model 
 EQfileName = "ElCentro"
 GMdata = {"acc": np.loadtxt(EQfileName + ".txt"),
           "npts": 1560,
