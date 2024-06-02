@@ -455,7 +455,7 @@ elif excitationType == "MultipleSupport":
     ops.imposedMotion(node1, 1, gmTag)
 
 
-ctrlNodes = [node2]
+ctrlNodes = [node1, node2, node3, node4, node5, node6]
 baseNodes = [node1]
 title("Running Response History Analysis!")
 
@@ -520,7 +520,13 @@ print(f"Final State: {controlTime:.3f} at {controlTime:.3f} of {tFinal:.3f} seco
 # Plot the response
 # -----------------
 plot_fig(figure_size=[15, 8], font_size=11, use_latex=False)
-plt.plot(outputs["time"], outputs[f"disp_{node2}x"]/mm, 'b-', linewidth=1, label="Node 2 in x-dir")
+
+plt.plot(outputs["time"], outputs[f"disp_{node2}x"]/mm, 'r-', linewidth=1, label="Node 2 in x-dir")
+# plt.plot(outputs["time"], outputs[f"disp_{node3}x"]/mm, 'g--', linewidth=1, label="Node 3 in x-dir")
+# plt.plot(outputs["time"], outputs[f"disp_{node4}x"]/mm, 'b:', linewidth=1, label="Node 4 in x-dir")
+# plt.plot(outputs["time"], outputs[f"disp_{node5}x"]/mm, 'k-.', linewidth=1, label="Node 5 in x-dir")
+# plt.plot(outputs["time"], outputs[f"disp_{node6}x"]/mm, 'm-', linewidth=1, label="Node 6 in x-dir")
+
 plt.xlabel("Time [s]")
 plt.ylabel("Displacement [mm]")
 figTitle = r"Node numbering: $\mathbf{" + nodeNumbering + "}$, Constraints: $\mathbf{" + constraints + "}$"
