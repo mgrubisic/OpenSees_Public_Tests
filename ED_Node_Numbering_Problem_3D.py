@@ -417,8 +417,8 @@ ModalAnalysis = {"Omega": omega,
     
 # Check again with "modalProperties"
 # ----------------------------------
-# ops.modalProperties("-print")
-
+ops.modalProperties("-print")
+# 
 # Plot Mode Shape
 #----------------
 opsv.plot_mode_shape(1)

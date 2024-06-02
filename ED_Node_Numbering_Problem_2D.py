@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import openseespy.opensees as ops
+import opsvis as opsv
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
@@ -37,7 +38,6 @@ def OPSheader(title, nSpaces=nSpaces):
     print(" ")
     
 OPSheader(title=OpenSeesHeader, nSpaces=nSpaces)
-
 
 # ┌───────────────────────────────────────────────────────────────────────────────┐
 # │                          Defining some functions                              │
@@ -77,7 +77,6 @@ def plot_fig(figure_size=[8, 6], font_size=11, use_latex=False):
     plt.tick_params(direction="in", length=5, colors="k", width=0.75)
 
     return ax, fig
-
 
 # ┌───────────────────────────────────────────────────────────────────────────────┐
 # │                             Units and Constants                               │
@@ -139,35 +138,6 @@ print(
 # ┌───────────────────────────────────────────────────────────────────────────────┐
 # │                               Model Definition                                │
 # └───────────────────────────────────────────────────────────────────────────────┘
-# CORRECT combinations
-# --------------------
-# node numbering "simple" + with ANY constraints variant                ==> results in correct periods/frequencies (T1 = 0.5620 s)
-
-# node numbering "problematicV1" + constraints "zeroLengthSection"      ==> results in correct periods/frequencies (T1 = 0.5620 s)
-# node numbering "problematicV1" + constraints "zeroLength"             ==> results in correct periods/frequencies (T1 = 0.5620 s)
-# node numbering "problematicV1" + constraints "twoNodeLink"            ==> results in correct periods/frequencies (T1 = 0.5620 s)
-
-# node numbering "problematicV2" + constraints "zeroLengthSection"      ==> results in correct periods/frequencies (T1 = 0.5620 s)
-# node numbering "problematicV2" + constraints "zeroLength"             ==> results in correct periods/frequencies (T1 = 0.5620 s)
-# node numbering "problematicV2" + constraints "twoNodeLink"            ==> results in correct periods/frequencies (T1 = 0.5620 s)
-
-# node numbering "problematicv3" + constraints "zeroLengthSection"      ==> results in correct periods/frequencies (T1 = 0.5620 s)
-# node numbering "problematicV3" + constraints "zeroLength"             ==> results in correct periods/frequencies (T1 = 0.5620 s)
-# node numbering "problematicV3" + constraints "twoNodeLink"            ==> results in correct periods/frequencies (T1 = 0.5620 s)
-
-
-# INCORRECT combinations
-# ----------------------
-# node numbering "problematicV1" + constraints "equalDOF"               ==> results in INCORRECT periods/frequencies (T1 = 0.4189 s)
-# node numbering "problematicV1" + constraints "rigidLink"              ==> results in INCORRECT periods/frequencies (T1 = 0.4189 s)
-
-# node numbering "problematicV2" + constraints "equalDOF"               ==> results in INCORRECT periods/frequencies (T1 = 0.4956 s)
-# node numbering "problematicV2" + constraints "rigidLink"              ==> results in INCORRECT periods/frequencies (T1 = 0.4956 s)
-
-# node numbering "problematicV3" + constraints "equalDOF"               ==> results in INCORRECT periods/frequencies (T1 = 0.3245 s)
-# node numbering "problematicV3" + constraints "rigidLink"              ==> results in INCORRECT periods/frequencies (T1 = 0.3245 s)
-
-
 # Node numbering
 # --------------
 nodeNumbering = "problematicV1" # "simple", "problematicV1", "problematicV2", "problematicV3"
@@ -179,11 +149,10 @@ constraints = "equalDOF" # "equalDOF", "rigidLink", "zeroLength", "twoNodeLink"
 # Transient Excitation Type
 # -------------------------
 excitationType = "Uniform" # "Uniform", "MultipleSupport"
-    
-# ModelBuilder
-# ------------
+
+
 ops.wipe()
-ops.model("basic", "-ndm", 1, "-ndf", 1)
+ops.model('basic','-ndm', 2, '-ndf', 3) # BasicBuilder, basic
 
 # Node numering
 # -------------
@@ -265,9 +234,9 @@ elif nodeNumbering == "problematicV3":
     + Pairs of nodes -- node3+node4 after node2+node3 & node5+node6 after node2+node5 -- constrained
       with the equalDOF/rigidLink command one after the other in a sequence.
       
-    + A consistent pattern was observed in this example: if the tag of the last constrained/secondary node in a sequence
+    + A consistent pattern was observed in this example: if the tag of the last constrained/secondary node in a constrained sequence
       is smaller than that of its corresponding retained/primary node, the mass associated with the constrained/secondary
-      node is excluded from the model.
+      node is excluded from the model with the equalDOF/rigidLink command.
     """
     node1 = 1
     node2 = 2
@@ -283,63 +252,85 @@ elif nodeNumbering == "problematicV3":
     # the mass at the "Node6" is not taken into account with the equalDOF/rigidLink command
 
 
-ops.node(node1, 0.0, '-mass', 0.0) # Node 1
-ops.node(node2, 0.0, '-mass', 2*tonne) # Node 2
+ops.node(node1, 0.0, 0.0, '-mass', *[0.0, 0.0, 0.0]) # Node 1
+ops.node(node2, 0.0, 3*m, '-mass', *[2*tonne, 2*tonne, 0.0]) # Node 2
 
-ops.node(node3, 0.0, '-mass', 2*tonne) # Node 3
-ops.node(node5, 0.0, '-mass', 2*tonne) # Node 5
+ops.node(node3, 0.0, 3*m, '-mass', *[2*tonne, 2*tonne, 0.0]) # Node 3
+ops.node(node5, 0.0, 3*m, '-mass', *[2*tonne, 2*tonne, 0.0]) # Node 5
 
-ops.node(node4, 0.0, '-mass', 4*tonne) # Node 4 
-ops.node(node6, 0.0, '-mass', 8*tonne) # Node 6 
-
-# Duplicate nodes 3, 5 & 4, 6 without masses, for testing!
-# --------------------------------------------------------
-# ops.node(node4, 0.0, '-mass', 0.0) # Node 4 
-# ops.node(node6, 0.0, '-mass', 0.0) # Node 6 
+ops.node(node4, 0.0, 3*m, '-mass', *[4*tonne, 4*tonne, 0.0]) # Node 4 
+ops.node(node6, 0.0, 3*m, '-mass', *[8*tonne, 8*tonne, 0.0]) # Node 6 
 
 # Restraints
 # ----------
-ops.fix(node1, 1) # Node 1
+ops.fix(node1, *[1, 1, 1]) # Node 1
 
-# Materials & elements
-# --------------------
-ops.uniaxialMaterial('Elastic', 1, 2.25E3) # System stiffness
-ops.uniaxialMaterial('Elastic', 999, 1E12) # "Rigid" material
+# Materials
+# ---------
+# Square section (30x30 cm, concrete C20/25)
+E  = 30*GPa
+A  = 900*cm2
+Iy = 67500*cm4
+Iz = 67500*cm4
+G  = 0.4*E
+J  = 12*m4
 
-ops.element('zeroLength', 1, *[node1, node2], '-mat', 1, '-dir', 1)
+# print(f"EA = {E * A}")
+# print(f"EI1 = {E * Iy}")
+# print(f"EI2 = {E * Iz}")
+# print(f"GJ = {G * J}")
+      
+# "Rigid" material
+# ----------------
+ops.uniaxialMaterial('Elastic', 999, 1E12)
 
+# Sections, transformations, intergrations & elements
+# ---------------------------------------------------
+ops.geomTransf('PDelta', 1)
+ops.element("elasticBeamColumn", 1, *[node1, node2], A, E, Iz, 1)
 
 # Constraints
 # -----------
 if constraints == "equalDOF":
-    ops.equalDOF(node2, node3, 1) # Nodes 2 & 3
-    ops.equalDOF(node2, node5, 1) # Nodes 2 & 5
+    # Nodal DOF: valid range is from 1 through NDF, the number of nodal DOF
+    ops.equalDOF(node2, node3, *[1,2,3]) # Nodes 2 & 3
+    ops.equalDOF(node2, node5, *[1,2,3]) # Nodes 2 & 5
     
-    ops.equalDOF(node3, node4, 1) # Nodes 3 & 4
-    ops.equalDOF(node5, node6, 1) # Nodes 5 & 6
+    ops.equalDOF(node3, node4, *[1,2,3]) # Nodes 3 & 4
+    ops.equalDOF(node5, node6, *[1,2,3]) # Nodes 5 & 6
     
 elif constraints == "rigidLink":
     ops.rigidLink("beam", node2, node3) # Nodes 2 & 3
     ops.rigidLink("beam", node2, node5) # Nodes 2 & 5
-    
+    # 
     ops.rigidLink("beam", node3, node4) # Nodes 3 & 4
     ops.rigidLink("beam", node5, node6) # Nodes 5 & 6
     
 elif constraints == "zeroLength":
-    ops.element('zeroLength', 121, *[node2, node3], '-mat', 999, '-dir', 1)
-    ops.element('zeroLength', 122, *[node2, node5], '-mat', 999, '-dir', 1)
+    # 1,2,3 - translation along local x,y,z axes, respectively;
+    # 4,5,6 - rotation about local x,y,z axes, respectively
+    ops.element('zeroLength', 121, *[node2, node3], '-mat', *[999,999,999], '-dir', *[1,2,6])
+    ops.element('zeroLength', 122, *[node2, node5], '-mat', *[999,999,999], '-dir', *[1,2,6])
     
-    ops.element('zeroLength', 123, *[node3, node4], '-mat', 999, '-dir', 1)
-    ops.element('zeroLength', 124, *[node5, node6], '-mat', 999, '-dir', 1)
+    ops.element('zeroLength', 123, *[node3, node4], '-mat', *[999,999,999], '-dir', *[1,2,6])
+    ops.element('zeroLength', 124, *[node5, node6], '-mat', *[999,999,999], '-dir', *[1,2,6])
     
 elif constraints == "twoNodeLink":
-    ops.element('twoNodeLink', 121, *[node2, node3], '-mat', 999, '-dir', 1)
-    ops.element('twoNodeLink', 122, *[node2, node5], '-mat', 999, '-dir', 1)
+    # 2D-case: 1,2 - translations along local x,y axes; 3 - rotation about local z axis
+    ops.element('twoNodeLink', 121, *[node2, node3], '-mat', *[999,999,999], '-dir', *[1,2,3])
+    ops.element('twoNodeLink', 122, *[node2, node5], '-mat', *[999,999,999], '-dir', *[1,2,3])
     
-    ops.element('twoNodeLink', 123, *[node3, node4], '-mat', 999, '-dir', 1)
-    ops.element('twoNodeLink', 124, *[node5, node6], '-mat', 999, '-dir', 1)
+    ops.element('twoNodeLink', 123, *[node3, node4], '-mat', *[999,999,999], '-dir', *[1,2,3])
+    ops.element('twoNodeLink', 124, *[node5, node6], '-mat', *[999,999,999], '-dir', *[1,2,3])
 
 title("Model Build!")
+# ┌───────────────────────────────────────────────────────────────────────────────┐
+# │                                 Plot Model                                    │
+# └───────────────────────────────────────────────────────────────────────────────┘
+# Plot model
+# ----------
+opsv.plot_model(node_labels = 1, element_labels = 1, local_axes = 1, gauss_points = 0)
+plt.title('Plot model after defining elements')
 
 
 # ┌───────────────────────────────────────────────────────────────────────────────┐
@@ -375,12 +366,17 @@ for i in range(0, num_modes):
         f"Mode #{i+1} ==> T{i+1} = {period[i]:.4f} sec, f{i+1} = {freq[i]:.4f} Hz, ω{i+1} = {omega[i]:.4f} rad/s")
 
 ModalAnalysis = {"Omega": omega,
-                 "Frequency": freq,
-                 "Period": period}
+                  "Frequency": freq,
+                  "Period": period}
     
 # Check again with "modalProperties"
 # ----------------------------------
 ops.modalProperties("-print")
+
+# Plot Mode Shape
+#----------------
+opsv.plot_mode_shape(1)
+plt.title('Mode Shape 1')
 
 
 # ┌───────────────────────────────────────────────────────────────────────────────┐
@@ -388,13 +384,11 @@ ops.modalProperties("-print")
 # └───────────────────────────────────────────────────────────────────────────────┘
 # ops.wipeAnalysis()
 
-
 ops.system("UmfPack") # UmfPack, FullGeneral
 # ops.eigen("-fullGenLapack", num_modes)
 dampRatio = 0.02
 ops.modalDampingQ(dampRatio)
 
-# The file with the ElCentro ground motion record is in the same Github repository as this OpenSees model 
 EQfileName = "ElCentro"
 GMdata = {"acc": np.loadtxt(EQfileName + ".txt"),
           "npts": 1560,
