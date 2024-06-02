@@ -152,7 +152,7 @@ excitationType = "Uniform" # "Uniform", "MultipleSupport"
 
 
 ops.wipe()
-ops.model('basic','-ndm', 2, '-ndf', 3) # BasicBuilder, basic
+ops.model('basic','-ndm', 2, '-ndf', 3)
 
 # Node numering
 # -------------
@@ -473,17 +473,30 @@ print(f"Final State: {controlTime:.3f} at {controlTime:.3f} of {tFinal:.3f} seco
 # -----------------
 plot_fig(figure_size=[15, 8], font_size=11, use_latex=False)
 
-plt.plot(outputs["time"], outputs[f"disp_{node2}x"]/mm, 'r-', linewidth=1, label="Node 2 in x-dir")
-# plt.plot(outputs["time"], outputs[f"disp_{node3}x"]/mm, 'g--', linewidth=1, label="Node 3 in x-dir")
-# plt.plot(outputs["time"], outputs[f"disp_{node4}x"]/mm, 'b:', linewidth=1, label="Node 4 in x-dir")
-# plt.plot(outputs["time"], outputs[f"disp_{node5}x"]/mm, 'k-.', linewidth=1, label="Node 5 in x-dir")
-# plt.plot(outputs["time"], outputs[f"disp_{node6}x"]/mm, 'm-', linewidth=1, label="Node 6 in x-dir")
+lineColors = [
+    (0.0,    0.4470, 0.7410), # blue
+    (0.8500, 0.3250, 0.0980), # red-orange
+    (0.9290, 0.6940, 0.1250), # yellow
+    (0.4940, 0.1840, 0.5560), # purple
+    (0.4660, 0.6740, 0.1880), # green
+    (0.3010, 0.7450, 0.9330)  # light blue
+]
+
+if excitationType == "Uniform":
+    for i in range(1, len(ctrlNodes)):
+        node_index = ctrlNodes[i]
+        plt.plot(outputs["time"], outputs[f"disp_{node_index}x"]/mm, color=lineColors[i], linewidth=3-i*0.5, label=f"Node {ctrlNodes[i]} in x-dir")
+
+elif excitationType == "MultipleSupport":
+    for i in range(0, len(ctrlNodes)):
+        node_index = ctrlNodes[i]
+        plt.plot(outputs["time"], outputs[f"disp_{node_index}x"]/mm, color=lineColors[i], linewidth=3-i*0.5, label=f"Node {ctrlNodes[i]} in x-dir")
 
 plt.xlabel("Time [s]")
 plt.ylabel("Displacement [mm]")
 figTitle = r"Node numbering: $\mathbf{" + nodeNumbering + "}$, Constraints: $\mathbf{" + constraints + "}$"
 plt.title(figTitle)
-plt.legend()
+plt.legend(loc="lower right")
 plt.show()
 
 # Wipe model!
