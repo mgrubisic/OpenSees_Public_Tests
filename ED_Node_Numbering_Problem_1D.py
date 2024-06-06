@@ -452,9 +452,9 @@ while controlTime < tFinal: # Linear system!
         outputs[f"disp_{ctrlNs}x"] = np.append(
             outputs[f"disp_{ctrlNs}x"], ops.nodeDisp(ctrlNs, 1))
         outputs[f"vel_{ctrlNs}x"] = np.append(
-            outputs[f"vel_{ctrlNs}x"], ops.nodeAccel(ctrlNs, 1))
+            outputs[f"vel_{ctrlNs}x"], ops.nodeVel(ctrlNs, 1))
         outputs[f"acc_{ctrlNs}x"] = np.append(
-            outputs[f"acc_{ctrlNs}x"], ops.nodeVel(ctrlNs, 1))
+            outputs[f"acc_{ctrlNs}x"], ops.nodeAccel(ctrlNs, 1))
 
     outputs["time"] = np.append(outputs["time"], controlTime)
     outputs["gmAcc"] = np.append(outputs["gmAcc"], ops.getLoadFactor(1))
